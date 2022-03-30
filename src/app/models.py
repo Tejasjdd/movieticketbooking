@@ -22,9 +22,8 @@ class Movie(models.Model):
 	name = models.CharField(max_length=25, null=True, default="")
 	duration = models.CharField(max_length=25, null=True, default="")
 	genre = models.CharField(max_length=25, null=True, default="")
-	release_date = models.CharField(max_length=20, null=True, default="")
-	language_avail = models.CharField(max_length=50,null=True)
-	shown_in_theater = models.ManyToManyField(Theater)	
+	release_date = models.DateTimeField(max_length=20, null=True, default="")
+	language_avail = models.CharField(max_length=50,null=True)	
 	trailer = models.URLField(blank=True)
 	image = models.ImageField(null=True,blank=True)
 	def __str__(self):
@@ -66,7 +65,7 @@ class Seat(models.Model):
     seat_code = models.CharField(max_length=20,null=True,blank=False)
     seat_type = models.CharField(max_length=8, choices=seat_choice, blank=False)
     show = models.ForeignKey(Shows, on_delete=models.CASCADE)
-    total_price = models.IntegerField(null=True)
+    total_amount = models.IntegerField(null=True)
     class Meta:
         unique_together = ('seat_code', 'show')
 
