@@ -5,6 +5,27 @@ class Customer(models.Model):
 	user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
 	name = models.CharField(max_length=25, null=True)
 	phone = models.CharField(max_length=13, null=True)
+	
+	def __str__(self):
+		return self.name
+
+class Actor(models.Model):
+	name = models.CharField(max_length=30,primary_key=True)
+	Born = models.CharField(max_length=50)
+	# movies_in_theater = models.ManyToManyField(Movie)
+
+	def __str__(self):
+		return self.name
+
+class Movie(models.Model):
+	name = models.CharField(max_length=25, null=True, default="")
+	duration = models.CharField(max_length=25, null=True, default="")
+	genre = models.CharField(max_length=25, null=True, default="")
+	release_date = models.DateTimeField(max_length=20, null=True, default="")
+	language = models.CharField(max_length=50,null=True)	
+	trailer = models.URLField(max_length=100,blank=False)
+	image = models.ImageField(null=True,blank=True)
+	cast = models.ManyToManyField(Actor)
 
 	def __str__(self):
 		return self.name
@@ -12,24 +33,11 @@ class Customer(models.Model):
 class Theater(models.Model):
 	name = models.CharField(max_length=25, null=True)
 	description = models.CharField(max_length=100, null=True)
+	city = models.CharField(max_length=20,null=True)
 	address = models.CharField(max_length=30,null=True)
 	no_of_screen = models.IntegerField(null=True)
-	def __str__(self):
-		return self.name
+	movies_shown = models.ManyToManyField(Movie)
 
-class Movie(models.Model):
-
-	name = models.CharField(max_length=25, null=True, default="")
-	duration = models.CharField(max_length=25, null=True, default="")
-	genre = models.CharField(max_length=25, null=True, default="")
-	release_date = models.DateTimeField(max_length=20, null=True, default="")
-<<<<<<< HEAD:src/app/models.py
-	language_avail = models.CharField(max_length=50,null=True)	
-=======
-	language_avail = models.CharField(max_length=50,null=True)
->>>>>>> 418d7818995722a68ed1ac1621b1e31385e36161:app/models.py
-	trailer = models.URLField(blank=True)
-	image = models.ImageField(null=True,blank=True)
 	def __str__(self):
 		return self.name
 
@@ -85,3 +93,5 @@ class Booking(models.Model):
     amount_paid = models.IntegerField(null=True)
     paid_by = models.ForeignKey(Customer, on_delete=models.DO_NOTHING)
     paid_for = models.ForeignKey(Shows, on_delete=models.DO_NOTHING)
+
+
