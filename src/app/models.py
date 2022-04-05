@@ -12,16 +12,16 @@ class Customer(models.Model):
 class Actor(models.Model):
 	name = models.CharField(max_length=30,primary_key=True)
 	Born = models.CharField(max_length=50)
-	# movies_in_theater = models.ManyToManyField(Movie)
+
 
 	def __str__(self):
 		return self.name
 
 class Movie(models.Model):
+	ids = models.AutoField(primary_key=True)
 	name = models.CharField(max_length=25, null=True, default="")
 	duration = models.CharField(max_length=25, null=True, default="")
 	genre = models.CharField(max_length=25, null=True, default="")
-	release_date = models.DateTimeField(max_length=20, null=True, default="")
 	language = models.CharField(max_length=50,null=True)	
 	trailer = models.URLField(max_length=100,blank=False)
 	image = models.ImageField(null=True,blank=True)
@@ -93,5 +93,3 @@ class Booking(models.Model):
     amount_paid = models.IntegerField(null=True)
     paid_by = models.ForeignKey(Customer, on_delete=models.DO_NOTHING)
     paid_for = models.ForeignKey(Shows, on_delete=models.DO_NOTHING)
-
-
