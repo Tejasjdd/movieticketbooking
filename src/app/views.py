@@ -4,7 +4,6 @@ from .serializers import MovieSerializers
 from .models import Theater,Movie,Actor
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 class ActorViewSet(viewsets.ViewSet):
 
@@ -44,8 +43,8 @@ class AcViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-class UpdateViewSet(viewsets.ViewSet):
-    authentication_classes = [BasicAuthentication]
+class UpdateViewSet(viewsets.ViewSet): 
+    
     permission_classes = [IsAdminUser]
     def partial_update(self, request, bk, pk=None):
         queryset = Movie.objects.get(ids=pk)
