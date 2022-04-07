@@ -1,9 +1,9 @@
-
 from rest_framework import viewsets
 from .serializers import MovieSerializers
 from .models import Theater,Movie,Actor
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
+
 
 class ActorViewSet(viewsets.ViewSet):
 
@@ -60,3 +60,4 @@ class UpdateViewSet(viewsets.ViewSet):
             serializer.save()
             return Response({"message": "model instance created"})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
