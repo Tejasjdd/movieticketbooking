@@ -6,6 +6,7 @@ router = DefaultRouter()
 
 #empty path URL first and throwing detail not found, so keep router with the empty path at last
 router.register('update', views.UpdateViewSet,basename='update')
+router.register('artist', views.ArtistViewSet,basename='artist')
 router.register('city', views.CityViewSet,basename='cities')
 router.register('ac', views.AcViewSet,basename='ac')
 router.register('', views.ActorViewSet,basename='actor')

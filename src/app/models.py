@@ -25,7 +25,7 @@ class Movie(models.Model):
 	language = models.CharField(max_length=50,null=True)	
 	trailer = models.URLField(max_length=100,blank=False)
 	image = models.ImageField(null=True,blank=True)
-	cast = models.ManyToManyField(Actor)
+	cast = models.ManyToManyField(Actor,related_name ='related')
 
 	def __str__(self):
 		return self.name
