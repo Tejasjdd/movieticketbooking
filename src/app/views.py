@@ -10,7 +10,9 @@ class ActorViewSet(viewsets.ViewSet):
     def list(self, request ,bk=None):
         print(self.basename,self.action,self.detail,self.suffix)
         object = Actor.objects.get(name__iexact=bk)
-        queryset = object.movie_set.all()
+        print(object)
+        queryset = object.related.all()
+        print(queryset)
         serializer = MovieSerializer(queryset, many=True)
         return Response(serializer.data)
 
