@@ -13,9 +13,13 @@ class Actor(models.Model):
 	name = models.CharField(max_length=30,primary_key=True)
 	Born = models.CharField(max_length=50)
 
+	def get_info(self):
+		return self.name + self.Born
 
 	def __str__(self):
 		return self.name
+
+
 
 class Movie(models.Model):
 	ids = models.AutoField(primary_key=True)
@@ -23,12 +27,16 @@ class Movie(models.Model):
 	duration = models.CharField(max_length=25, null=True, default="")
 	genre = models.CharField(max_length=25, null=True, default="")
 	language = models.CharField(max_length=50,null=True)	
-	trailer = models.URLField(max_length=100,blank=False)
+	trailer = models.URLField(max_length=100,null=True,blank=False)
 	image = models.ImageField(null=True,blank=True)
 	cast = models.ManyToManyField(Actor,related_name ='related')
 
+	
+
 	def __str__(self):
 		return self.name
+
+	
 
 class Theater(models.Model):
 	name = models.CharField(max_length=25, null=True)
