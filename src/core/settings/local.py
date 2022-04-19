@@ -10,3 +10,4 @@ DATABASES = {
         'NAME': 'db.sqlite3',
     }
 }
+
