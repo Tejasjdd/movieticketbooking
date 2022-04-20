@@ -20,7 +20,6 @@ class Actor(models.Model):
 		return self.name
 
 
-
 class Movie(models.Model):
 	ids = models.AutoField(primary_key=True)
 	name = models.CharField(max_length=25, null=True, default="")
