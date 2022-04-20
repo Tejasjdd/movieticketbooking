@@ -33,9 +33,11 @@ class CityViewSet(viewsets.ViewSet):
     def list(self, request ,bk=None):
         objects = Theater.objects.filter(city__iexact=bk)
         queryset = Movie.objects.none()
+        print(queryset)
         for object in objects:
+            # | operator to create a union i.e. To combine two querysets
             queryset |= object.movies_shown.all().distinct()   
-               
+            
         serializer = MovieSerializer(queryset, many=True)
         return Response(serializer.data)
 
