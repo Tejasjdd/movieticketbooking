@@ -6,7 +6,7 @@ from app import views
 
 
 router = DefaultRouter()
-app_name = 'app'
+
 
 
 #empty path URL first and throwing detail not found, so keep router with the empty path at last

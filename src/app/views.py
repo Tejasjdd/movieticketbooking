@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAdminUser
 
 class ActorViewSet(viewsets.ViewSet):
 
-    def list(self, request ,bk=None):
+    def list(self, request ,bk):
         print(self.basename,self.action,self.detail,self.suffix)
         object = Actor.objects.get(name__iexact=bk)
         queryset = object.related.all()
@@ -17,12 +17,16 @@ class ActorViewSet(viewsets.ViewSet):
     def partial_update(self, request, bk, pk=None):
         objs = []
         queryset = Movie.objects.all()
-        for movie in queryset: 
-            obj = Movie.objects.get(name=movie.name)
-            obj.genre = request.data['genre']
-            objs.append(obj)
-        Movie.objects.bulk_update(objs, ['genre'])
-        return Response({"message": "bulk updation is done"})
+        if request.data:
+            for movie in queryset: 
+                obj = Movie.objects.get(name=movie.name)
+                obj.genre = request.data['genre']
+                objs.append(obj)
+            Movie.objects.bulk_update(objs, ['genre'])
+            return Response({"message": "bulk updation is done"})
+        return Response({"message": "Data is not submitted"})
+
+
 
 class CityViewSet(viewsets.ViewSet):
 
@@ -73,7 +77,5 @@ class UpdateViewSet(viewsets.ViewSet):
 class ArtistViewSet(viewsets.ModelViewSet):
     serializer_class = ActorSerializer
     queryset = Actor.objects.all()
-    
-
     
     
