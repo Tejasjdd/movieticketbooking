@@ -35,7 +35,6 @@ class CityViewSet(viewsets.ViewSet):
         queryset = Movie.objects.none()
         print(queryset)
         for object in objects:
-            # | operator to create a union i.e. To combine two querysets
             queryset |= object.movies_shown.all().distinct()   
             
         serializer = MovieSerializer(queryset, many=True)
