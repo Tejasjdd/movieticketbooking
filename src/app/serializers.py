@@ -59,4 +59,3 @@ class SeatSerializer(serializers.ModelSerializer):
                 "required": True,
             }
         }
-

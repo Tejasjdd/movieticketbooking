@@ -19,7 +19,7 @@ urlpatterns = [
     path('home/<str:bk>/<str:ck>/', include(router.urls)),
     path('app/', include(routers1.urls)),
     path('bulk/', views.BulkAPIView.as_view(), name='bulk'),
-    path('login/', views.LoginView.as_view(), name='knox_login'),
     path('register/', views.SignUpAPI.as_view(), name='register'),
+    path('login/', views.LoginView.as_view(), name='knox_login'),
     path('logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
 ]

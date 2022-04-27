@@ -10,7 +10,7 @@ from knox.views import LoginView as KnoxLoginView
 from rest_framework.generics import GenericAPIView
 from django.contrib.auth import login
 from knox.models import AuthToken
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from django. db. models import Q
 import operator
 from functools import reduce
@@ -69,6 +69,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
 
 
 class LoginView(KnoxLoginView):
+    permission_classes = [AllowAny]
 
     def post(self, request, format=None):
         serializer = AuthTokenSerializer(data=request.data)
@@ -77,9 +78,7 @@ class LoginView(KnoxLoginView):
         login(request, user)
         token = AuthToken.objects.create(user)[1]
         print(token)
-        return Response({
-            "token": token
-        })
+        return super(LoginView, self).post(request, format=None)
 
 
 class SignUpAPI(GenericAPIView):
