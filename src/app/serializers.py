@@ -1,7 +1,13 @@
-from .models import Movie, Actor, Seat
+from .models import Movie, Actor, Seat, Shows
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework import serializers, validators
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email')
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -25,6 +31,9 @@ class RegisterSerializer(serializers.ModelSerializer):
                   'is_staff', 'is_superuser', 'is_active']
         extra_kwargs = {
             "password": {"write_only": True},
+            'is_staff': {"read_only": True},
+            'is_superuser': {"read_only": True},
+            'is_active': {"read_only": True},
             "email": {
                 "required": True,
                 "allow_blank": False,
@@ -37,14 +46,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        user = User.objects.create_user(
+        user = User.objects.create(
             username=validated_data["username"],
             email=validated_data["email"],
-            password=validated_data["password"],
-            is_staff=validated_data["is_staff"],
-            is_superuser=validated_data["is_superuser"],
-            is_active=validated_data["is_active"],
         )
+        user.set_password(validated_data['password'])
+        user.save()
         return user
 
 
@@ -57,5 +64,12 @@ class SeatSerializer(serializers.ModelSerializer):
 
             "no_of_seats": {
                 "required": True,
+                "read_only": True,
             }
         }
+
+
+class ShowsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shows
+        fields = '__all__'
