@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from rest_framework import validators
 from django.core.exceptions import ValidationError
 
 
@@ -16,7 +15,7 @@ class Actor(models.Model):
 
 
 class Theater(models.Model):
-    name = models.CharField(max_length=25, null=True)
+    name = models.CharField(max_length=25)
     description = models.CharField(max_length=100, null=True)
     city = models.CharField(max_length=20, null=True)
     address = models.CharField(max_length=30, null=True)
@@ -35,7 +34,8 @@ class Movie(models.Model):
     trailer = models.URLField(max_length=100, null=True, blank=False)
     image = models.ImageField(null=True, blank=True)
     cast = models.ManyToManyField(Actor, related_name='related')
-    theaters = models.ManyToManyField(Theater)
+    theaters = models.ManyToManyField(
+        Theater)
 
     def __str__(self):
         return self.name
@@ -89,10 +89,10 @@ class BookedSeat(models.Model):
         ('AVAILABLE', 'AVAILABLE'),
     )
 
-    seat_code = models.CharField(max_length=30, null=True)
+    booked_seats = models.CharField(max_length=30, null=True)
     booking_status = models.CharField(
         max_length=25, null=True, blank=True, choices=BOOKING_STATUS, default=BOOKING_STATUS[1][0])
     booked_by_customer = models.ForeignKey(
         User, null=True, on_delete=models.SET_NULL)
     shows = models.ForeignKey(
-        Shows, null=True, blank=True, on_delete=models.SET_NULL)
+        Shows, null=True, blank=True, on_delete=models.SET_NULL, related_name='booked')

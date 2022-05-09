@@ -51,14 +51,13 @@ class MovieViewSet(viewsets.ViewSet):
             queryset = Movie.objects.filter(
                 reduce(operator.or_, all_tag_q)).distinct()
         else:
-            print("hello0")
             queryset = Movie.objects.filter(
                 reduce(operator.and_, all_tag_q)).distinct()
         serializer = MovieSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def partial_update(self, request, pk=None):
-        queryset = Movie.objects.get(ids=pk)
+        queryset = Movie.objects.get(name=pk)
         serializer = MovieSerializer(
             queryset, data=request.data, partial=True)
         if serializer.is_valid():

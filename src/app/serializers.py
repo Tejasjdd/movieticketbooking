@@ -1,4 +1,4 @@
-from .models import Movie, Actor, Seat, Shows
+from .models import Movie, Actor, Seat, Shows, BookedSeat, Theater
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework import serializers, validators
@@ -11,9 +11,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class MovieSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Movie
-        fields = ['ids', 'name', 'duration', 'genre', 'language', 'image']
+        fields = ['name', 'duration', 'genre',
+                  'language', 'image', 'cast', 'theaters']
 
 
 class ActorSerializer(serializers.ModelSerializer):
@@ -69,7 +71,18 @@ class SeatSerializer(serializers.ModelSerializer):
         }
 
 
+class BookedSeatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookedSeat
+        fields = ['booked_seats']
+
+
 class ShowsSerializer(serializers.ModelSerializer):
+    booked = BookedSeatSerializer(many=True, read_only=True)
+    movie_shown = serializers.CharField(source='movie_shown.name')
+    theater = serializers.CharField(source='theater.name')
+
     class Meta:
         model = Shows
-        fields = '__all__'
+        fields = ['id', 'name', 'language', 'screen',
+                  'datetime', 'total_seats', 'booked', 'theater', 'movie_shown']

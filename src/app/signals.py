@@ -15,7 +15,7 @@ def createbookedseat(sender, instance, created, **kwargs):
     if created:
         seat = instance
         BookedSeat.objects.create(
-            seat_code=seat.seat_code,
+            booked_seats=seat.seat_code,
             booking_status='BOOKED',
             booked_by_customer=get_current_authenticated_user(),
             shows=seat.show,
