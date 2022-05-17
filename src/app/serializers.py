@@ -2,12 +2,39 @@ from .models import Movie, Actor, Seat, Shows, BookedSeat, Theater
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework import serializers, validators
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
+
+
+class LoginSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(allow_blank=True, default="")
+    email = serializers.CharField(allow_blank=True, default="")
+    password = serializers.CharField(
+        label=("Password",),
+        style={'input_type': 'password'},
+        trim_whitespace=False
+    )
+
+    class Meta:
+        model = User
+        fields = ['username','email','password']
+
+    def validate(self, data):
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+        user = authenticate(
+            username = username or email, password=password)  # to be noted
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError("Invalid Details.")
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
+        fields = ('id', 'username', 'email', 'is_staff',
+                  'is_superuser', 'is_active')
 
 
 class MovieSerializer(serializers.ModelSerializer):

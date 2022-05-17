@@ -1,8 +1,10 @@
+from curses.ascii import US
 from rest_framework import viewsets
-from .serializers import MovieSerializer, ActorSerializer, RegisterSerializer, SeatSerializer, UserSerializer, ShowsSerializer
+from .serializers import LoginSerializer, MovieSerializer, ActorSerializer, RegisterSerializer, SeatSerializer, UserSerializer, ShowsSerializer
 from .models import Theater, Movie, Actor, Seat, Shows
 from rest_framework.response import Response
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.permissions import IsAuthenticated
 from knox.auth import AuthToken, TokenAuthentication
 from rest_framework import permissions
 from .permissions import IsStaff
@@ -19,16 +21,6 @@ from rest_framework.views import APIView
 from rest_framework import generics
 
 
-class UserAPIView(generics.RetrieveAPIView):
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
-    serializer_class = UserSerializer
-
-    def get_object(self):
-        return self.request.user
-
-
 class MovieViewSet(viewsets.ViewSet):
     permission_classes = [IsStaff | IsAdminUser]
 
@@ -38,21 +30,21 @@ class MovieViewSet(viewsets.ViewSet):
         return super(MovieViewSet, self).get_permissions()
 
     def list(self, request):
-        cast__name = request.query_params.get('actor')
-        theaters__city = request.query_params.get('city')
-        name = request.query_params.get('movie')
-        all_tag_q = [Q(cast__name=request.query_params.get('actor')), Q(
-            theaters__city=request.query_params.get('city'))]
-        if name is None and theaters__city is None and cast__name is None:
-            queryset = Movie.objects.all()
-        elif cast__name is None or theaters__city is None:
-            all_tag_q = [Q(cast__name=request.query_params.get('actor')), Q(
-                theaters__city=request.query_params.get('city')), Q(name=request.query_params.get('movie'))]
-            queryset = Movie.objects.filter(
-                reduce(operator.or_, all_tag_q)).distinct()
-        else:
-            queryset = Movie.objects.filter(
-                reduce(operator.and_, all_tag_q)).distinct()
+
+        querylist = []
+        # for field in request.query_params:
+        #     if field == 'actor':
+        #         querylist.append(Q(cast__name=request.query_params.get('actor')))
+        #     elif field == 'city':
+        #         querylist.append(Q(theaters__city=request.query_params.get('city')))
+        #     elif field == 'movie':
+        #         querylist.append(Q(name=request.query_params.get('movie')))
+
+        querylist.append(Q(cast__name=request.query_params.get('actor')) | Q(
+            theaters__city=request.query_params.get('city')) | Q(name=request.query_params.get('movie')))
+        queryset = Movie.objects.filter(
+            reduce(operator.and_, querylist)).distinct()
+        print(querylist)
         serializer = MovieSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -62,14 +54,14 @@ class MovieViewSet(viewsets.ViewSet):
             queryset, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "partially updated"})
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
         serializer = MovieSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "model instance created"})
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -78,15 +70,25 @@ class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Actor.objects.all()
 
 
-class LoginView(KnoxLoginView):
+class LoginView(generics.GenericAPIView):
     permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = AuthTokenSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        login(request, user)
-        return super(LoginView, self).post(request, format=None)
+        user = serializer.validated_data
+        token = AuthToken.objects.create(user)[1]
+        print(token)
+
+        return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "token": token
+        })
 
 
 class SignUpAPI(GenericAPIView):
@@ -99,6 +101,7 @@ class SignUpAPI(GenericAPIView):
 
 
 class BookingAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, movie=None, format=None):
         queryset = Shows.objects.filter(movie_shown__name=movie)
@@ -125,5 +128,5 @@ class BulkAPIView(APIView):
                 obj.genre = request.data['genre']
                 objs.append(obj)
             Movie.objects.bulk_update(objs, ['genre'])
-            return Response({"message": "bulk updation is done"})
+            return Response(request.data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
